@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Поставщик</title>
+</head>
+<body>
+<h3>Название: {{ obj.name }}</h3>
+<h3>Поставки:</h3>
+        {% for supply in obj.supply_set.all %}
+            {% for pos_supply in supply.pos_supply_set.all %}
+               №{{ supply.pk }} - {{ pos_supply.product}} : {{ pos_supply.quantity }} <br>
+            {% endfor %}
+        {% endfor %}
+<p><a href="{% url 'suppliers_page' %}"></a></p>
+</body>
+</html>

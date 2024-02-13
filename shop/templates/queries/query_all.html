@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Вывод всех значений</title>
+    <link rel="stylesheet" href="{% static 'shop/css/bootstrap.css'%}">
+</head>
+<body>
+    <a href="/shop/"></a>
+
+    {# так выглядят комментарии Django #}
+    <!-- Комментарии HTML-->
+    {# {{ var }} - переменные Djano, передаваемые через context из view в виде ключа #}
+    {# {% for %} {% endfor %} #}
+
+    <div class="container">
+        <div class="row">
+            {% for obj in list %}
+                <div class="col-4">
+                    <div class="card" style="width: 18rem;">
+                        {% if obj.image %}
+                        <img src="{{ obj.image.url }}" class="card-img-top" alt="...">
+                        {% else %}
+                        <img src="{% static 'shop/image/98094191.jpg' %}" class="card-img-top" alt="...">
+                        {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title"> {{ obj.name }}</h5>
+                        <h6 class="card-subtitle mb-2 text-body-secondary"> Категория: {{ obj.category.name }}</h6>
+                        <p class="card-text">{{ obj.description }}</p>
+                        <p class="card-text">Цена: {{ obj.price }}</p>
+                        <a href="{% url 'detail_page' obj.pk %}" class=" btn btn-primary">Подробнее</a>
+                    </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if request.user.is_staff%}
+        <p><a href="{% url 'create_supplier_page' %}">Добавление поставщика</a></p>
+
+    {% endif %}
+
+
+</body>
+</html>
