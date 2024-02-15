@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+<h1>Поставщики</h1>
+<a href="{% url 'create_supplier_page' %}">Добавить поставщика</a>
+
+{% block title_block %}
+	Поставщики
+{% endblock %}
+
+{% block content %}
+{#	<div>#}
+{#        <h2>{{ supplier.name }}</h2>#}
+{#        <div>#}
+{#        <p>#}
+{#            Фамилия представителя: {{ supplier.representor_surname }} <br>#}
+{#            Имя представителя: {{ supplier.representor_name }} <br>#}
+{#            Отчество представителя: {{ supplier.representor_patronymic }} <br>#}
+{#            Телефон представителя: {{ supplier.representor_phone_number }} <br>#}
+{#            Адрес: {{ supplier.address }} <br>#}
+{#            <p><a href="{% url 'detail_supplier_page' supplier.pk %}">Подробнее</a></p>#}
+{#        </p>#}
+{#        </div>#}
+{#</div>#}
+
+
+    <div class="container px-4 py-5" id="featured-3">
+    <h2 class="pb-2 border-bottom" style="text-align: center">Поставщики</h2>
+    <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+    {% for supplier in list %}
+      <div class="feature col">
+        <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3">
+{#          <svg class="bi" width="1em" height="1em"><use xlink:href="#toggles2"></use></svg>#}
+        </div>
+        <h3 class="fs-2 text-body-emphasis">{{ supplier.name }}</h3>
+        <p>
+            Фамилия представителя: {{ supplier.representor_surname }} <br>
+            Имя представителя: {{ supplier.representor_name }} <br>
+            Отчество представителя: {{ supplier.representor_patronymic }} <br>
+            Телефон представителя: {{ supplier.representor_phone_number }} <br>
+            Адрес: {{ supplier.address }} <br>
+        </p>
+        <a href="#" style="align-content: center" class="icon-link btn btn-outline-primary me-2">
+          Детальнее
+        </a>
+      </div>
+    {% endfor %}
+
+    </div>
+  </div>
+
+{% endblock %}

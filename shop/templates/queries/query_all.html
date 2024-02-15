@@ -1,0 +1,74 @@
+{#{% load static %}#}
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>Вывод всех значений</title>#}
+{#    <link rel="stylesheet" href="{% static 'shop/css/bootstrap.css'%}">#}
+{#</head>#}
+{#<body>#}
+{#    <a href="/shop/"></a>#}
+{##}
+    {# так выглядят комментарии Django #}
+{#    <!-- Комментарии HTML-->#}
+    {# {{ var }} - переменные Djano, передаваемые через context из view в виде ключа #}
+    {# {% for %} {% endfor %} #}
+
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="album py-5 bg-body-tertiary">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          {% for obj in list %}
+            <div class="col">
+              <div class="card shadow-sm">
+                <img src="{{obj.image.url }}" class="bd-placeholder-img card-img-top"  width="900%" height="50%" role="img" aria-label="Placeholder: Thumbnail" ><title>
+                  {{ obj.name }}</title><rect width="100%" height="100%" fill="#55595c"></rect><text style="text-align: center; font-size: 20px"  x="50%" y="50%" fill="#eceeef" dy=".3em">
+                    {{ obj.name }}</text></img>
+                <div class="card-body">
+                  <p class="card-text">{{ obj.category.name }}</p>
+                  <p class="card-text" style="font-size: 23px; font-weight: bold; color: rgba(204,23,65,0.73)">{{ obj.price }} ₽</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-secondary"> <a href="{% url 'detail_page' obj.pk %}">Детальнее</a></button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary"> <a href="{% url 'product_delete' obj.pk %}">Удалить</a></button>
+                    </div>
+                    <small class="text-body-secondary">{{ obj.isActive }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+    </div>
+    </div>
+{##}
+{##}
+{##}
+{##}
+{##}
+{#        <div class="row">#}
+{#            {% for obj in list %}#}
+{#                <div class="col-4">#}
+{#                    <div class="card" style="width: 18rem;">#}
+{#                        {% if obj.image %}#}
+{#                        <img src="{{ obj.image.url }}" class="card-img-top" alt="...">#}
+{#                        {% endif %}#}
+{#                    <div class="card-body">#}
+{#                        <h5 class="card-title"> {{ obj.name }}</h5>#}
+{#                        <h6 class="card-subtitle mb-2 text-body-secondary"> Категория: {{ obj.category.name }}</h6>#}
+{#                        <p class="card-text"> В наличии: {{ obj.isActive }}</p>#}
+{#                        <p class="card-text">Цена: {{ obj.price }}</p>#}
+{#                        <a href="{% url 'detail_page' obj.pk %}" class=" btn btn-primary">Подробнее</a>#}
+{#                    </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            {% endfor %}#}
+{#        </div>#}
+{##}
+{##}
+{#    {% if request.user.is_staff%}#}
+{#        <p><a href="{% url 'create_supplier_page' %}">Добавление поставщика</a></p>#}
+{#    {% endif %}#}
+{% endblock %}
+
+
