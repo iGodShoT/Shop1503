@@ -161,7 +161,10 @@ class CategoryList(ListView):
         'title': 'Список категорий'
     }
     allow_empty = True
-    # paginate_by = 1
+
+    # from django.core.paginator import Paginator
+
+    paginate_by = 1
     def get_queryset(self):
         return Category.objects.all()
 
@@ -213,3 +216,41 @@ class CategoryDelete(DeleteView):
     @method_decorator(permission_required('shop.delete_category'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+
+from shop.utils import CalculateMoney
+
+class OrderDetail(DetailView, CalculateMoney):
+    model = Order
+    template_name = 'order/order_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order = context.get('object')
+        list_price = [pos_order.sum_pos_order() for pos_order in order.pos_order_set.all()]
+        context['sum_price'] = self.sum_price(prices=list_price)
+        return context
+
+from django.core.mail import send_mail, send_mass_mail
+from django.conf import settings
+
+def contact_email(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+            mail = send_mail(form.cleaned_data['subject'],
+                             form.cleaned_data['content'],
+                             settings.EMAIL_HOST_USER,
+                             ['mail_for_django@mail.ru'],
+                             fail_silently=True)
+            if mail:
+                messages.success(request, 'Письмо успешно добавлено!')
+                return redirect('home_page')
+            else:
+                messages.error(request, 'Не удалось отправить письмо')
+        else:
+            messages.warning(request, 'Письмо неверно заполнено')
+    else:
+        form = ContactForm()
+    return render(request, 'email/email.html', {'form': form})

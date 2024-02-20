@@ -1,12 +1,10 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ obj.name }}</title>
-    <link rel="stylesheet" href="{% static 'shop/css/bootstrap.css' %}">
-</head>
-<body>
+{% block title_block %}
+    {{ obj.name }}
+{% endblock %}
+
+{% block content %}
 <div class="container">
     <div class="row">
         <div class="col-2">
@@ -45,8 +43,6 @@
             <div class="col-4">{{ param.parameter }} : {{ param.value }}</div>
         {% endfor %}
     </div>
-
-
     {% if request.user.is_authenticated %}
         <p><input type="submit" class="btn btn-success" value="Купить"></p>
     {% endif %}
@@ -62,13 +58,10 @@
         <h2>Поставки:</h2>
         {% for supply in obj.supply_set.all %}
             <ul>
-            <li>{{ supply }}</li>
+                <li>{{ supply }}</li>
             </ul>
         {% endfor %}
     </div>
-<p><a href="{% url 'home_page' %}">На стартовую страницу</a></p>
+    <p><a href="{% url 'home_page' %}">На стартовую страницу</a></p>
 </div>
-
-
-</body>
-</html>
+{% endblock %}

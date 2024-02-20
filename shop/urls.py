@@ -24,4 +24,5 @@ urlpatterns = [
     path('category/<int:pk>/detail/', CategoryDetail.as_view(), name='category_detail'),
     path('category/<int:pk>/update/', CategoryUpdate.as_view(), name='category_update'),
     path('category/<int:pk>/delete/', CategoryDelete.as_view(), name='category_delete'),
+    path('contact/', contact_email, name='email_page')
 ]

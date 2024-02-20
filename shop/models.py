@@ -1,6 +1,5 @@
 from django.db import models
 from django.urls import reverse_lazy
-
 MAX_LENGTH_CHAR = 255
 
 class Supplier(models.Model):
@@ -105,16 +104,18 @@ class Order(models.Model):
             ('change_delivery_type', 'Возможность изменить тип доставки'),
         ]
 
-
+from shop.utils import sum_price_count
 class Pos_order(models.Model):
     product = models.ForeignKey('Product', on_delete=models.PROTECT, verbose_name='Товар')
     order = models.ForeignKey(Order, on_delete=models.PROTECT, verbose_name='Заказ')
     quantity = models.PositiveIntegerField(default=1,verbose_name='Количество товара')
     discount = models.PositiveIntegerField(default=0, verbose_name='Скидка')
 
-
     def __str__(self):
         return f"{self.pk} - {self.product.name}, {self.order.customer_surname} {self.order.customer_name} {self.order.customer_patronymic}"
+
+    def sum_pos_order(self):
+        return sum_price_count(self.product.price, self.quantity, self.discount)
 
     class Meta:
         verbose_name = 'Позиция заказа'

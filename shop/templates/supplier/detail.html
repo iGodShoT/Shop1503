@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Поставщик</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title_block %}
+    Поставщик
+{% endblock %}
+{% block content %}
 <h3>Название: {{ obj.name }}</h3>
 <h3>Поставки:</h3>
         {% for supply in obj.supply_set.all %}
@@ -13,5 +13,4 @@
             {% endfor %}
         {% endfor %}
 <p><a href="{% url 'suppliers_page' %}"></a></p>
-</body>
-</html>
+{% endblock %}
