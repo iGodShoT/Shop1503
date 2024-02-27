@@ -15,14 +15,30 @@ urlpatterns = [
     path('register/', user_registration, name='registration_page'),
     path('auth/', user_login, name='user_login_page'),
     path('logout/', user_logout, name='logout'),
+
     path('anon/', anon, name='anon'),
     path('auth/', auth, name='auth'),
+
     path('can_add/', is_able_to_add_product, name='add'),
     path('can_add_change/', is_able_to_add_and_change_product, name='add_change'),
     path('can_change_delivery_type', is_able_to_change_delivery_type, name='change_delivery_type'),
+
+
     path('category/', CategoryList.as_view(), name='category_list'),
     path('category/create', CategoryCreate.as_view(), name='category_create'),
     path('category/<int:pk>/detail/', CategoryDetail.as_view(), name='category_detail'),
     path('category/<int:pk>/update/', CategoryUpdate.as_view(), name='category_update'),
     path('category/<int:pk>/delete/', CategoryDelete.as_view(), name='category_delete'),
+
+
+    # ---------------------------------- API -----------------------------
+    path('api/', test_json, name='api_test'),
+    path('api/orders/', order_api_list, name='api_order_list'),
+    path('api/orders/<int:pk>/', order_api_detail, name='api_order_detail')
+
 ]
+# ------------------------------- API View ----------------------------------
+from rest_framework import routers
+router = routers.SimpleRouter()
+router.register(r'api/products', ProductViewSet, basename='product')
+urlpatterns += router.urls
