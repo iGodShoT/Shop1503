@@ -217,3 +217,125 @@ class CategoryDelete(DeleteView):
     @method_decorator(permission_required('shop.delete_category'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+
+from django.http import JsonResponse
+from shop.serializers import *
+
+# status - пакет со всеми статусными кодами для настройки отчета
+from rest_framework import status
+
+from rest_framework.response import Response
+
+# api_view - декоратор, внутри него можно описывать доступные нам методы
+from rest_framework.decorators import api_view
+
+# viewsets - generic класс, c CRUD операциями
+from rest_framework import viewsets
+
+def test_json(request):
+    return JsonResponse({
+        'message': 'Данные в виде JSON',
+        'api_test':  reverse_lazy('api_test'),
+        'order_api_list': reverse_lazy('api_order_list'),
+        'order_api_detail': reverse_lazy('api_order_detail'),
+    })
+
+
+@api_view(['GET', 'POST'])
+def order_api_list(request, format=None):
+    # Проверка запроса
+    if request.method == 'GET':
+
+        # Получаем данные из БД
+        order_list = Order.objects.filter(exists=True)
+
+        # Преобразуем данные в словарь с помощью сериализатора
+        # По умолчанию сериализатор работает с одним объектом, но если у нас
+        # список объектов то стоит включить параметр many
+        serializer = OrderSerializer(order_list, many=True)
+        print(serializer.data)
+        return Response({'orders': serializer.data})
+
+    elif request.method == 'POST':
+        serializer = OrderSerializer(data=request.data)
+        if serializer.is_valid():
+            # Сохранение
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET','PUT', 'DELETE'])
+def order_api_detail(request, pk, format=None):
+    order_obj = get_object_or_404(Order, pk=pk)
+
+    if order_obj:
+        if request.method == 'GET':
+            serializer = OrderSerializer(order_obj)
+            return Response(serializer.data)
+        elif request.method == 'PUT':
+            serializer = OrderSerializer(order_obj, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'message': 'Данные успешно обновлены', 'order': serializer.data})
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        elif request.method == 'DELETE':
+            # Удаление объекта
+            order_obj.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        # Если объект не был найден
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.filter(isActive=True)
+    serializer_class = ProductSerializer
+
+class OrderList(ListView):
+    model = Order
+    template_name = 'order/order_list.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, args, kwargs)
+
+class OrderDetail(DetailView):
+    model = Order
+    template_name = 'order/order_detail.html'
+
+    @method_decorator(permission_required('shop.view_order'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, args, kwargs)
+
+class OrderCreate(CreateView):
+    model = Order
+    form_class = OrderForm
+    template_name = 'order/order_form.html'
+    extra_context = {
+        'action': 'Создание',
+        'action_button': 'Создать'
+    }
+    @method_decorator(permission_required('shop.add_order'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, args, kwargs)
+
+class OrderUpdate(UpdateView):
+    model = Order
+    form_class = OrderForm
+    template_name = 'order/order_form.html'
+    extra_context = {
+        'action': 'Изменение',
+        'action_button': 'Изменить'
+    }
+
+    @method_decorator(permission_required('shop.change_order'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, args, kwargs)
+
+class OrderDelete(DeleteView):
+    model = Order
+    success_url = reverse_lazy('order_list_view')
+    template_name = 'order/order_confirm_delete.html'
+
+    @method_decorator(permission_required('shop.delete_order'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, args, kwargs)

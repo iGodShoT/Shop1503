@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Регистрация</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title_block %}
+{% endblock %}
+{% block content %}
 
 <h1>Регистрация</h1>
 
@@ -26,6 +23,4 @@
 </div>
 
 <a href="{% url 'user_login_page' %}">Авторизация</a>
-
-</body>
-</html>
+{% endblock %}

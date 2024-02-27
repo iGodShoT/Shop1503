@@ -98,6 +98,9 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.pk}: {self.customer_surname} {self.customer_name} {self.customer_patronymic}, {self.creation_date}"
 
+    def get_absolute_url(self):
+        return reverse_lazy('order_detail_view', kwargs={'pk': self.pk})
+
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
@@ -108,7 +111,7 @@ class Order(models.Model):
 
 class Pos_order(models.Model):
     product = models.ForeignKey('Product', on_delete=models.PROTECT, verbose_name='Товар')
-    order = models.ForeignKey(Order, on_delete=models.PROTECT, verbose_name='Заказ')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Заказ')
     quantity = models.PositiveIntegerField(default=1,verbose_name='Количество товара')
     discount = models.PositiveIntegerField(default=0, verbose_name='Скидка')
 
@@ -154,6 +157,9 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     tag = models.ManyToManyField(Tag, blank=True, null=True)
     parameter = models.ManyToManyField(Parameter, through=Pos_parameter)
+
+    def get_absolute_url(self):
+        return reverse_lazy('detail_page', kwargs={'id': self.pk})
 
     def __str__(self):
         return self.name

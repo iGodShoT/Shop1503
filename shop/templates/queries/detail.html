@@ -1,12 +1,9 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ obj.name }}</title>
-    <link rel="stylesheet" href="{% static 'shop/css/bootstrap.css' %}">
-</head>
-<body>
+{% block title_block %}
+    Товар №{{ obj.pk }}
+{% endblock %}
+{% block content %}
 <div class="container">
     <div class="row">
         <div class="col-2">
@@ -50,6 +47,8 @@
     {% if request.user.is_authenticated %}
         <p><input type="submit" class="btn btn-success" value="Купить"></p>
     {% endif %}
+{% endblock %}
+{% block additional_content %}
     {% if request.user.is_staff %}
         <div class="row">
             <h1>Заказы, в которых участвовал товар</h1>
@@ -68,7 +67,4 @@
     </div>
 <p><a href="{% url 'home_page' %}">На стартовую страницу</a></p>
 </div>
-
-
-</body>
-</html>
+{% endblock %}

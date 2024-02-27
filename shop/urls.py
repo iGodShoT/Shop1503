@@ -25,4 +25,12 @@ urlpatterns = [
     path('category/<int:pk>/detail/', CategoryDetail.as_view(), name='category_detail'),
     path('category/<int:pk>/update/', CategoryUpdate.as_view(), name='category_update'),
     path('category/<int:pk>/delete/', CategoryDelete.as_view(), name='category_delete'),
+    path('api/', test_json, name='api_test'),
+    path('api/orders/', order_api_list, name='api_order_list'),
+    path('api/orders/<int:pk>/', order_api_detail, name='api_order_detail'),
+    path('order/', OrderList.as_view(), name='order_list_view'),
+    path('order/<int:pk>/', OrderDetail.as_view(), name='order_detail_view'),
+    path('order/create/', OrderCreate.as_view(), name='order_create_view'),
+    path('order/<int:pk>/update/', OrderUpdate.as_view(), name='order_update_view'),
+    path('order/<int:pk>/delete/', OrderDelete.as_view(), name='order_delete_view')
 ]

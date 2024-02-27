@@ -64,3 +64,15 @@ class LoginForm(AuthenticationForm):
         label='Пароль',
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
+
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = [
+            'customer_surname',
+            'customer_name',
+            'customer_patronymic',
+            'delivery_address',
+            'delivery_type',
+            'product'
+        ]

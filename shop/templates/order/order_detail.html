@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title_block %}
+    Заказ №{{ object.pk }}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                {{ order.customer_surname }} {{ order.customer_name }} {{ order.customer_patronymic }}
+            </div>
+            <div class="col">
+                {{ order.delivery_address }} {{ order.delivery_type }}
+            </div>
+        </div>
+        <div class="row row-cols-1">
+            {% for pos_product in object.pos_order_set.all %}
+                <div class="col">
+                    <a href="{{ pos_product.product.get_absolute_url }}">{{ pos_product.product.name }}
+                    </a>: {{ pos_product.product.price }} * {{ pos_product.quantity }} | {{ pos_product.discount }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block additional_content %}
+    <a class="btn btn-success" href="{% url 'order_list_view' %}">К списку заказов</a>
+
+    {% if perms.shop.change_order %}
+        <a class="btn btn-warning" href="{% url 'order_update_view' order.pk %}">Изменить</a>
+    {% endif %}
+
+    {% if perms.shop.delete_order %}
+        <a class="btn btn-danger" href="{% url 'order_delete_view' order.pk %}">Удалить</a>
+    {% endif %}
+{% endblock %}

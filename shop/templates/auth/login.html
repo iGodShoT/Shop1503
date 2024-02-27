@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Авторизация</title>
-</head>
-<body>
-
-<h1>Авторизация</h1>
-
-{% if messages %}
+{% extends 'base.html' %}
+{% block title_block %}
+    Авторизация
+{% endblock %}
+{% block content %}
+    {% if messages %}
     <h1>Сообщение</h1>
     <ul class="messages">
         {% for message in messages %}
@@ -26,6 +21,5 @@
     <a href="{% url 'registration_page' %}">Зарегистрироваться</a>
     <a href="{% url 'home_page' %}">На домашнюю</a>
 </div>
+{% endblock %}
 
-</body>
-</html>
