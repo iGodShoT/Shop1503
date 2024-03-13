@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title_block %}
-    Товар №{{ obj.pk }}
+    Товар №{{ product.pk }}
 {% endblock %}
 {% block content %}
 <div class="container">
     <div class="row">
         <div class="col-2">
             <div class="container">
-                <h1>Название: {{ obj.name }}</h1>
-                <p>Описание: {{ obj.description }}</p>
-                <h3>Цена: {{ obj.price }}</h3>
+                <h1>{{ product.name }}</h1>
+                <p>{{ product.description }}</p>
+                <h3>Цена: {{ product.price }}₽</h3>
             </div>
         </div>
         <div class="col-3">
-            {% if obj.image %}
-                <img src="{{ obj.image.url }}" class="card-img-top" alt="...">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" class="card-img-top" alt="...">
             {% else %}
                 <img src="{% static 'shop/image/98094191.jpg' %}" class="card-img-top" alt="...">
             {% endif %}
@@ -24,21 +24,21 @@
     <div class="row">
         <div class="container">
             <h2>Категория</h2>
-            <a href="#">{{ obj.category.name }}</a>
+            <a href="#">{{ product.category.name }}</a>
         </div>
     </div>
 
     <div class="row">
         <div class="container">
             <h3>Теги:</h3>
-            {% for tag in obj.tag.all %}
+            {% for tag in product.tag.all %}
                 {{ tag.name }}
             {% endfor %}
         </div>
     </div>
     <div class="row">
         <h3>Характеристики</h3>
-        {% for param in obj.pos_parameter_set.all %}
+        {% for param in product.pos_parameter_set.all %}
             <div class="col-4">{{ param.parameter }} : {{ param.value }}</div>
         {% endfor %}
     </div>
@@ -49,17 +49,23 @@
     {% endif %}
 {% endblock %}
 {% block additional_content %}
+    {% if perms.shop.change_product %}
+        <a class="btn btn-outline-warning" href="{% url 'update_product' product.pk %}">Редактировать</a>
+    {% endif %}
+    {% if perms.shop.delete_product %}
+        <a class="btn btn-outline-danger" href="{% url 'product_delete' product.pk %}">Удалить</a>
+    {% endif %}
     {% if request.user.is_staff %}
         <div class="row">
             <h1>Заказы, в которых участвовал товар</h1>
-            {% for order in obj.order_set.all %}
-                Номер заказа: {{ order.pk }}
+            {% for order in product.order_set.all %}
+                <p>Номер заказа: {{ order.pk }}</p>
             {% endfor %}
         </div>
     {% endif %}
     <div class="row">
         <h2>Поставки:</h2>
-        {% for supply in obj.supply_set.all %}
+        {% for supply in product.supply_set.all %}
             <ul>
             <li>{{ supply }}</li>
             </ul>

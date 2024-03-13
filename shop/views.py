@@ -3,45 +3,58 @@ from django.shortcuts import render, get_object_or_404, redirect
 from shop.forms import *
 from shop.models import *
 from django.contrib import messages
+from django.views.generic import ListView, DeleteView, DetailView, UpdateView, CreateView
+from django.utils.decorators import method_decorator
+from django.urls import reverse_lazy
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required, permission_required
 
 # Create your views here.
 def index(request):
     return render(request, 'queries/index.html')
 
-def query_all(request):
-    products = Product.objects.all()
+class ProductList(ListView):
+    model = Product
+    template_name = 'queries/query_all.html'
+class ProductDetail(DetailView):
+    model = Product
+    template_name = 'queries/detail.html'
+    @method_decorator(permission_required('shop.view_product'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
-    context = {
-        'list': products # list - ключ, который будет использоваться как переменная в HTML
+class ProductCreate(CreateView):
+    model = Product
+    template_name = 'queries/product_form.html'
+    form_class = ProductForm
+    extra_context = {
+        'action': 'Создание',
+        'action_button': 'Создать'
     }
-    return render(request, 'queries/query_all.html', context)
+    @method_decorator(permission_required('shop.add_product'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, args, kwargs)
 
-def delete_product(request, id):
-    product = get_object_or_404(Product, id=id)
-    product.delete()
-    return redirect('catalog_products_page')
-def get_one_product(request,id):
-    product = get_object_or_404(Product, pk=id)
-    return render(request, 'queries/query_one.html', {'obj': product})
+class ProductUpdate(UpdateView):
+    model = Product
+    template_name = 'queries/product_form.html'
+    form_class = ProductForm
+    extra_context = {
+        'action': 'Изменение',
+        'action_button': 'Изменить'
+    }
+    @method_decorator(permission_required('shop.change_product'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, args, kwargs)
 
+class ProductDelete(DeleteView):
+    model = Product
+    template_name = 'queries/product_confirm_delete.html'
+    success_url = reverse_lazy('catalog_products_page')
 
-def detail_product(request,id):
-    if request.method == "POST":
-        messages.success(request, 'Успешная покупка')
-        return redirect('catalog_products_page')
-    product = get_object_or_404(Product, pk=id)
-    return render(request, 'queries/detail.html', {'obj': product})
-
-def create_product(request):
-    category = get_object_or_404(Category, pk=1)
-    parameter = get_object_or_404(Parameter, pk=1)
-    product = Product()
-    product.name = 'Яблоко'
-    product.price = 60
-    product.category = category
-
-    product.save()
-    return render(request, 'queries/message.html', context={'message': 'Товар добавлен!'})
+    @method_decorator(permission_required('shop.delete_product'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, args, kwargs)
 
 def get_suppliers(request):
     suppliers = Supplier.objects.all()
@@ -67,10 +80,6 @@ def create_supplier(request):
         'form': form
     }
     return render(request, 'supplier/create_supplier.html', context)
-
-
-from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required, permission_required
 
 def user_registration(request):
     if request.method == "POST":
@@ -145,17 +154,6 @@ def is_able_to_change_delivery_type(request):
 def buy(request):
 
     return render(request, 'queries/purchase.html')
-
-# View Generic
-# ListView - Список объектов
-# DetailView - Полная информация выбранного объекта
-# UpdateView - Изменение
-# CreateView - Создание
-# DeleteView - Удаление
-
-from django.views.generic import ListView, DeleteView, DetailView, UpdateView, CreateView
-from django.utils.decorators import method_decorator
-from django.urls import reverse_lazy
 
 class CategoryList(ListView):
     model = Category
@@ -248,7 +246,7 @@ def order_api_list(request, format=None):
     if request.method == 'GET':
 
         # Получаем данные из БД
-        order_list = Order.objects.filter(exists=True)
+        order_list = Order.objects.all()
 
         # Преобразуем данные в словарь с помощью сериализатора
         # По умолчанию сериализатор работает с одним объектом, но если у нас
@@ -269,34 +267,31 @@ def order_api_list(request, format=None):
 def order_api_detail(request, pk, format=None):
     order_obj = get_object_or_404(Order, pk=pk)
 
-    if order_obj:
-        if request.method == 'GET':
-            serializer = OrderSerializer(order_obj)
-            return Response(serializer.data)
-        elif request.method == 'PUT':
-            serializer = OrderSerializer(order_obj, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response({'message': 'Данные успешно обновлены', 'order': serializer.data})
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        elif request.method == 'DELETE':
-            # Удаление объекта
-            order_obj.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-    else:
-        # Если объект не был найден
+    if order_obj == None:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+    if request.method == 'GET':
+        serializer = OrderSerializer(order_obj)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = OrderSerializer(order_obj, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Данные успешно обновлены', 'order': serializer.data})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        # Удаление объекта
+        order_obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.filter(isActive=True)
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
 
 class OrderList(ListView):
     model = Order
     template_name = 'order/order_list.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, args, kwargs)
 
 class OrderDetail(DetailView):
     model = Order
@@ -314,6 +309,7 @@ class OrderCreate(CreateView):
         'action': 'Создание',
         'action_button': 'Создать'
     }
+
     @method_decorator(permission_required('shop.add_order'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, args, kwargs)
@@ -339,3 +335,19 @@ class OrderDelete(DeleteView):
     @method_decorator(permission_required('shop.delete_order'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, args, kwargs)
+
+class SupplyList(ListView):
+    model = Supply
+    template_name = 'supply/supply_list.html'
+
+    @method_decorator(permission_required('shop.view_supply'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, args, kwargs)
+
+class SupplierViewSet(viewsets.ModelViewSet):
+    queryset = Supplier.objects.all()
+    serializer_class = SupplierSerializer
+
+class SupplyViewSet(viewsets.ModelViewSet):
+    queryset = Supply.objects.all()
+    serializer_class = SupplySerializer

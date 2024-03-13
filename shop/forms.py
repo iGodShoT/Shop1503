@@ -76,3 +76,16 @@ class OrderForm(forms.ModelForm):
             'delivery_type',
             'product'
         ]
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = [
+            'name',
+            'description',
+            'price',
+            'isActive',
+            'category',
+            'tag',
+            'parameter'
+        ]

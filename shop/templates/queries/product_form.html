@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 
 {% block title_block %}
-    {{ action }} заказа
+    {{ action }} товара
 {% endblock %}
 
 {% block content %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form }}
-        <button class="btn btn-success" type="submit">{{ action_button }} заказ</button>
+        <button class="btn btn-success" type="submit">{{ action_button }} товар</button>
     </form>
 {% endblock %}
 
 {% block additional_content %}
-    <a class="btn btn-outline-success" href="{% url 'order_list_view' %}">К списку заказов</a>
+    <a class="btn btn-outline-success" href="{% url 'catalog_products_page' %}">К списку товаров</a>
 {% endblock %}

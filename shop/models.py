@@ -26,6 +26,9 @@ class Supply(models.Model):
     supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT, verbose_name='Поставщик')
     product = models.ManyToManyField('Product', through='Pos_supply', verbose_name='Товар')
 
+    #def get_absolute_url(self):
+        #return reverse_lazy('supply_detail_view', kwargs={'pk': self.pk})
+
     def __str__(self):
         return f"{self.pk} - {self.date}, название компании-поставщика: {self.supplier.name}"
 
@@ -95,11 +98,13 @@ class Order(models.Model):
 
     product = models.ManyToManyField('Product', through='Pos_order', verbose_name='Товар')
 
+    def get_absolute_url(self):
+        return reverse_lazy('order_detail_view', kwargs={'pk': self.pk})
+
     def __str__(self):
         return f"{self.pk}: {self.customer_surname} {self.customer_name} {self.customer_patronymic}, {self.creation_date}"
 
-    def get_absolute_url(self):
-        return reverse_lazy('order_detail_view', kwargs={'pk': self.pk})
+
 
     class Meta:
         verbose_name = 'Заказ'
@@ -152,14 +157,14 @@ class Product(models.Model):
     price = models.FloatField(verbose_name='Цена')
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
     image = models.ImageField(upload_to='image/%Y/%m/%d', null=True, blank=True, verbose_name='Картинка')
-    isActive = models.BooleanField(default=True, verbose_name='Существует ли?')
+    isActive = models.BooleanField(default=True, verbose_name='Есть в наличии?')
 
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     tag = models.ManyToManyField(Tag, blank=True, null=True)
     parameter = models.ManyToManyField(Parameter, through=Pos_parameter)
 
     def get_absolute_url(self):
-        return reverse_lazy('detail_page', kwargs={'id': self.pk})
+        return reverse_lazy('detail_page', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.name

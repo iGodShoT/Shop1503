@@ -4,11 +4,11 @@ from shop.views import *
 
 urlpatterns = [
     path('', index, name='home_page'),
-    path('getProducts/', query_all, name='catalog_products_page'),
-    path('getProduct/<int:id>', get_one_product),
-    path('delete_product/<int:id>', delete_product, name='product_delete'),
-    path('product/<int:id>', detail_product, name='detail_page'),
-    path('createProduct/', create_product),
+    path('products/', ProductList.as_view(), name='catalog_products_page'),
+    path('product/<int:pk>/delete/', ProductDelete.as_view(), name='product_delete'),
+    path('product/<int:pk>/detail/', ProductDetail.as_view(), name='detail_page'),
+    path('product/create/', ProductCreate.as_view(), name='create_product'),
+    path('product/<int:pk>/update/', ProductUpdate.as_view(), name='update_product'),
     path('getSuppliers/', get_suppliers, name='suppliers_page'),
     path('createSupplier', create_supplier, name='create_supplier_page'),
     path('supplier/<int:id>', detail_supplier, name='detail_supplier_page'),
@@ -28,9 +28,18 @@ urlpatterns = [
     path('api/', test_json, name='api_test'),
     path('api/orders/', order_api_list, name='api_order_list'),
     path('api/orders/<int:pk>/', order_api_detail, name='api_order_detail'),
-    path('order/', OrderList.as_view(), name='order_list_view'),
-    path('order/<int:pk>/', OrderDetail.as_view(), name='order_detail_view'),
-    path('order/create/', OrderCreate.as_view(), name='order_create_view'),
-    path('order/<int:pk>/update/', OrderUpdate.as_view(), name='order_update_view'),
-    path('order/<int:pk>/delete/', OrderDelete.as_view(), name='order_delete_view')
+    path('orders/', OrderList.as_view(), name='order_list_view'),
+    path('orders/<int:pk>/', OrderDetail.as_view(), name='order_detail_view'),
+    path('orders/create/', OrderCreate.as_view(), name='order_create_view'),
+    path('orders/<int:pk>/update/', OrderUpdate.as_view(), name='order_update_view'),
+    path('orders/<int:pk>/delete/', OrderDelete.as_view(), name='order_delete_view'),
+    path('supplies/', SupplyList.as_view(), name='supplies_list_view')
+
 ]
+from rest_framework import routers
+
+router = routers.SimpleRouter()
+router.register(r'api/products', ProductViewSet, basename='product')
+router.register(r'api/suppliers', SupplierViewSet, basename='supplier')
+router.register(r'api/supplies', SupplyViewSet, basename='supplies')
+urlpatterns += router.urls

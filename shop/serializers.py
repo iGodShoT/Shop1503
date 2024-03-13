@@ -1,6 +1,7 @@
 # Сериализаторы нужны для преобразования одного вида данных в другие виды
 from rest_framework import serializers
-from .models import Product, Order
+from .models import Product, Order, Supplier, Pos_supply, Supply
+
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,6 +22,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
+            'pk',
             'name',
             'description',
             'price',
@@ -30,4 +32,46 @@ class ProductSerializer(serializers.ModelSerializer):
             'category',
             'tag',
             'parameter',
+        ]
+
+class SupplierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supplier
+        fields = [
+            'name',
+            'representor_surname',
+            'representor_name',
+            'representor_patronymic',
+            'representor_phone_number'
+        ]
+
+class ProductSupplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = [
+            'name',
+            'price'
+        ]
+
+class Pos_supplySerializer(serializers.ModelSerializer):
+    product = ProductSupplySerializer(read_only=True)
+    class Meta:
+        model = Pos_supply
+        fields = [
+            'product',
+            'quantity'
+        ]
+
+
+class SupplySerializer(serializers.ModelSerializer):
+    pos_supply_set = Pos_supplySerializer(read_only=True, many=True)
+    supplier = serializers.HyperlinkedRelatedField(read_only=True, view_name='supplier-detail')
+
+    class Meta:
+        model = Supply
+        fields = [
+            'pk',
+            'date',
+            'supplier',
+            'pos_supply_set'
         ]
